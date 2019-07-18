@@ -3,20 +3,24 @@
 const app = require('../../app.js');
 const chai = require('chai');
 const expect = chai.expect;
-var event, context;
+const fs = require('fs');
+const data = fs.readFileSync('../origin_response.json');
+var event = JSON.parse(data);
+var context;
 
 describe('Tests index', function () {
     it('verifies successful response', async () => {
-        const result = await app.lambdaHandler(event, context)
-
-        expect(result).to.be.an('object');
-        expect(result.statusCode).to.equal(200);
-        expect(result.body).to.be.an('string');
-
-        let response = JSON.parse(result.body);
-
-        expect(response).to.be.an('object');
-        expect(response.message).to.be.equal("hello world");
-        // expect(response.location).to.be.an("string");
+        await app.lambdaHandler(event, context, callback)
     });
 });
+
+function callback(err, result){
+    if(err){
+        console.error(err);
+        return;
+    }
+    console.log(JSON.stringify(result));
+
+    expect(result.status).to.equal('200');
+    expect(result.headers).to.be.an('object');
+}
