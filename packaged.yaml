@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'LambdaEdge
+
+  Sample SAM Template for LambdaEdge
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  ViewerRequestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://kasaiso-cloudformation-templates-us-east-1/93b5e61859f92ae1054dc01e12bee926
+      Handler: app.lambdaHandler
+      Runtime: nodejs10.x
+      Role:
+        Fn::GetAtt:
+        - LambdaEdgeRole
+        - Arn
+  ViewerRequestFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      Description: For ViewerRequestFunction node
+      FunctionName:
+        Ref: ViewerRequestFunction
+  ViewerResponseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://kasaiso-cloudformation-templates-us-east-1/4efb90c4f5528f111befd9d367fc193a
+      Handler: app.lambdaHandler
+      Runtime: nodejs10.x
+      Role:
+        Fn::GetAtt:
+        - LambdaEdgeRole
+        - Arn
+  ViewerResponseFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      Description: For ViewerResponseFunction node
+      FunctionName:
+        Ref: ViewerResponseFunction
+  OriginRequestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://kasaiso-cloudformation-templates-us-east-1/53e17c8d5c8470aac009ce9e148bf380
+      Handler: app.lambdaHandler
+      Runtime: nodejs10.x
+      Role:
+        Fn::GetAtt:
+        - LambdaEdgeRole
+        - Arn
+  OriginRequestFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      Description: For OriginRequestFunction node
+      FunctionName:
+        Ref: OriginRequestFunction
+  OriginResponseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://kasaiso-cloudformation-templates-us-east-1/2b1554b786d5a1b1a9481ad0aa601b87
+      Handler: app.lambdaHandler
+      Runtime: nodejs10.x
+      Role:
+        Fn::GetAtt:
+        - LambdaEdgeRole
+        - Arn
+  OriginResponseFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      Description: For OriginResponseFunction node
+      FunctionName:
+        Ref: OriginResponseFunction
+  LambdaEdgeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - edgelambda.amazonaws.com
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+Outputs:
+  ViewerRequestFunction:
+    Value:
+      Ref: ViewerRequestFunction
+    Export:
+      Name: ViewerRequestFunction
+  ViewerRequestFunctionVersion:
+    Value:
+      Ref: ViewerRequestFunctionVersion
+    Export:
+      Name: ViewerRequestFunctionVersion
+  ViewerResponseFunction:
+    Value:
+      Ref: ViewerResponseFunction
+    Export:
+      Name: ViewerResponseFunction
+  ViewerResponseFunctionVersion:
+    Value:
+      Ref: ViewerResponseFunctionVersion
+    Export:
+      Name: ViewerResponseFunctionVersion
+  OriginRequestFunction:
+    Value:
+      Ref: OriginRequestFunction
+    Export:
+      Name: OriginRequestFunction
+  OriginRequestFunctionVersion:
+    Value:
+      Ref: OriginRequestFunctionVersion
+    Export:
+      Name: OriginRequestFunctionVersion
+  OriginResponseFunction:
+    Value:
+      Ref: OriginResponseFunction
+    Export:
+      Name: OriginResponseFunction
+  OriginResponseFunctionVersion:
+    Value:
+      Ref: OriginResponseFunctionVersion
+    Export:
+      Name: OriginResponseFunctionVersion
+  LambdaEdgeRole:
+    Value:
+      Ref: LambdaEdgeRole
+    Export:
+      Name: LambdaEdgeRole
+  LambdaEdgeRoleArn:
+    Value:
+      Fn::GetAtt:
+      - LambdaEdgeRole
+      - Arn
+    Export:
+      Name: LambdaEdgeRoleArn

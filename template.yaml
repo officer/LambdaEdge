@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  LambdaEdge
+
+  Sample SAM Template for LambdaEdge
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+    # Lambda@Edge
+    ## Viewer Request
+    ViewerRequestFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: viewer_request/
+            Handler: app.lambdaHandler
+            Runtime: nodejs10.x
+            Role: !GetAtt LambdaEdgeRole.Arn
+    
+    ViewerRequestFunctionVersion:
+      Type: AWS::Lambda::Version
+      Properties:
+        Description: "For ViewerRequestFunction node"
+        FunctionName: !Ref ViewerRequestFunction
+
+    ## Viewer Response
+    ViewerResponseFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: viewer_response/
+            Handler: app.lambdaHandler
+            Runtime: nodejs10.x
+            Role: !GetAtt LambdaEdgeRole.Arn
+
+    ViewerResponseFunctionVersion:
+      Type: AWS::Lambda::Version
+      Properties:
+        Description: "For ViewerResponseFunction node"
+        FunctionName: !Ref ViewerResponseFunction
+
+    ## Origin Request
+    OriginRequestFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: origin_request/
+            Handler: app.lambdaHandler
+            Runtime: nodejs10.x
+            Role: !GetAtt LambdaEdgeRole.Arn
+
+    OriginRequestFunctionVersion:
+      Type: AWS::Lambda::Version
+      Properties:
+        Description: "For OriginRequestFunction node"
+        FunctionName: !Ref OriginRequestFunction
+
+    ## Origin Response
+    OriginResponseFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: origin_response/
+            Handler: app.lambdaHandler
+            Runtime: nodejs10.x
+            Role: !GetAtt LambdaEdgeRole.Arn
+
+    OriginResponseFunctionVersion:
+      Type: AWS::Lambda::Version
+      Properties:
+        Description: "For OriginResponseFunction node"
+        FunctionName: !Ref OriginResponseFunction
+
+    # IAM Role for Lambda@Edge
+    LambdaEdgeRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument: 
+            Version: "2012-10-17"
+            Statement:
+                -
+                    Effect: "Allow"
+                    Principal:
+                        Service:
+                            - "edgelambda.amazonaws.com"
+                            - "lambda.amazonaws.com"
+                    Action:
+                        - "sts:AssumeRole"
+        ManagedPolicyArns:
+            - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+
+Outputs:
+  ViewerRequestFunction:
+    Value: !Ref ViewerRequestFunction
+    Export:
+      Name: ViewerRequestFunction
+  ViewerRequestFunctionVersion:
+    Value: !Ref ViewerRequestFunctionVersion
+    Export:
+      Name: ViewerRequestFunctionVersion
+        
+
+  ViewerResponseFunction:
+    Value: !Ref ViewerResponseFunction
+    Export:
+      Name: ViewerResponseFunction
+  ViewerResponseFunctionVersion:
+    Value: !Ref ViewerResponseFunctionVersion
+    Export:
+      Name: ViewerResponseFunctionVersion
+        
+
+  OriginRequestFunction:
+    Value: !Ref OriginRequestFunction
+    Export:
+      Name: OriginRequestFunction
+  OriginRequestFunctionVersion:
+    Value: !Ref OriginRequestFunctionVersion
+    Export:
+      Name: OriginRequestFunctionVersion
+        
+
+  OriginResponseFunction:
+    Value: !Ref OriginResponseFunction
+    Export:
+      Name: OriginResponseFunction
+
+  OriginResponseFunctionVersion:
+    Value: !Ref OriginResponseFunctionVersion
+    Export:
+      Name: OriginResponseFunctionVersion
+        
+  LambdaEdgeRole:
+    Value: !Ref LambdaEdgeRole
+    Export:
+      Name: LambdaEdgeRole
+
+  LambdaEdgeRoleArn:
+    Value: !GetAtt LambdaEdgeRole.Arn
+    Export:
+      Name: LambdaEdgeRoleArn
